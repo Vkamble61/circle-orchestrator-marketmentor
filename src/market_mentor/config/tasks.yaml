@@ -1,0 +1,49 @@
+ingestion_task:
+  name: Document Ingestion Task
+  description: Handles the ingestion of company documents by parsing and extracting clean text.
+  agent: ingestion_agent
+  input: Raw {source} document files (PDFs, DOCX, etc.)
+  expected_output: Clean text chunks with metadata (document id, page number, section)
+
+indexing_task:
+  name: Document Indexing Task  
+  description: Generates vector embeddings from text chunks and stores them for similarity search.
+  agent: indexing_agent
+  input: Clean text chunks with metadata (document id, page number, section)
+  expected_output: Vector embeddings for each text chunk
+
+# retrieval_task:
+#   name: Context Retrieval Task  
+#   description: Retrieves top relevant text chunks based on vector similarity to a user's query.
+#   agent: retriever_agent  
+#   input: User query and vector database
+#   expected_output: Retrieved text chunks with source references for grounding
+
+# task_classification_task:
+#   name: Task Classification Task  
+#   description: Analyzes the user's input to classify if the request is for a Q&A or Marketing content generation task.
+#   agent: task_classification_agent
+#   input: User input text
+#   expected_output: Task label ("Q&A" or "Marketing") and confidence score
+
+# QandA_task:
+#   name: Q&A Task
+#   description: Handles user queries by retrieving relevant information from the document corpus.
+#   agent: qa_agent
+#   input: User query and retrieved context
+#   expected_output: Final answer to the user's question
+
+# Marketing_task:
+#   name: Marketing Content Generation Task
+#   description: Generates marketing content based on user input and retrieved context.
+#   agent: marketing_agent
+#   input: User input and retrieved context
+#   expected_output: Generated marketing content
+
+# logging_task:
+#   name: Logging Task
+#   description: Logs user interactions and system events for monitoring and debugging purposes.
+#   agent: logging_agent
+#   input: User input and system responses
+#   expected_output: Log entries with timestamps and metadata
+  
