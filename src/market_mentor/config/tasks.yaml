@@ -12,12 +12,12 @@ indexing_task:
   input: Clean text chunks with metadata (document id, page number, section)
   expected_output: Vector embeddings for each text chunk
 
-# retrieval_task:
-#   name: Context Retrieval Task  
-#   description: Retrieves top relevant text chunks based on vector similarity to a user's query.
-#   agent: retriever_agent  
-#   input: User query and vector database
-#   expected_output: Retrieved text chunks with source references for grounding
+retrieval_task:
+  name: Context Retrieval Task  
+  description: Retrieves top relevant text chunks based on vector similarity to a user's query.
+  agent: retrieval_agent  
+  input: User query and vector database
+  expected_output: Retrieved text chunks with source references for grounding
 
 # task_classification_task:
 #   name: Task Classification Task  

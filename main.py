@@ -14,6 +14,9 @@ def run():
 
     input_docs = {'source': "src/market_mentor/knowledge_source/introduction-to-genai.pdf"}
     result = MarketMentor().crew().kickoff(inputs=input_docs)  # Start the crew process
+    
+    with open("Retriever_Agent_result.txt", "w", encoding="utf-8") as f:
+        f.write(str(result))
     print("Final Result:", result)
     
 if __name__ == "__main__":

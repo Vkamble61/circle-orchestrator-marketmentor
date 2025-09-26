@@ -46,6 +46,17 @@ class MarketMentor():
             verbose=True,
             llm=self.llm
         )
+    @agent
+    def retrieval_agent(self) -> Agent:
+        retrieval_cfg = self.agents_config['retrieval_agent']
+
+        return Agent(
+            role=retrieval_cfg['role'],
+            goal=retrieval_cfg['goal'],
+            backstory=retrieval_cfg['backstory'],
+            verbose=True,
+            llm=self.llm
+        )
     
     @task
     def ingestion_task(self) -> Task:
@@ -68,12 +79,23 @@ class MarketMentor():
             expected_output=self.tasks_config['indexing_task']['expected_output'],
 
         )
+    @task
+    def retrieval_task(self) -> Task:
+        if 'retrieval_task' not in self.tasks_config:
+            raise KeyError("tasks_config does not contain 'retrieval_task'. Current keys: " + str(self.tasks_config.keys()))
+        return Task(
+            agent=self.retrieval_agent(),
+            description=self.tasks_config['retrieval_task']['description'],
+            expected_output=self.tasks_config['retrieval_task']['expected_output'],
+
+        )
     
+
     @crew
     def crew(self) -> Crew:
-        agents = [self.ingestion_agent()]
-        tasks = [self.ingestion_task()]
-        
+        agents = [self.ingestion_agent(), self.indexing_agent(),self.retrieval_agent()]
+        tasks = [self.ingestion_task(),self.indexing_task(),self.retrieval_task()]
+
         return Crew(
             agents=agents,
             tasks=tasks,

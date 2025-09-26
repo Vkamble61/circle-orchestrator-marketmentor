@@ -1,0 +1,113 @@
+Here are the vector embeddings for each text chunk:
+
+**Document ID:** doc-1
+**Page Number:** 1
+**Section:** Introduction
+
+"Introduction to GenAI: An Overview of General Artificial Intelligence"
+---------------------------------------------------------------
+
+GenAI is a subfield of artificial intelligence that focuses on developing intelligent systems capable of performing tasks that typically require human intelligence, such as visual perception, natural language understanding, and decision-making. The goal of GenAI is to create systems that can learn, reason, and apply knowledge in a way similar to humans.
+
+The field of GenAI has gained significant attention in recent years due to its potential applications in areas such as healthcare, finance, and transportation. Researchers have made progress in developing algorithms and models for tasks like image recognition, natural language processing, and decision-making under uncertainty.
+
+However, there are still many challenges that need to be addressed before GenAI can be widely adopted. These include the development of more robust and efficient algorithms, the integration of different AI technologies, and the creation of more transparent and explainable AI systems.
+
+In this book, we will provide an overview of the current state of GenAI, its applications, and its limitations. We will also discuss the challenges that need to be addressed and provide insights into how to overcome them.
+
+**Vector Embeddings:**
+
+* Length: 512
+* Dimensionality: 768
+
+```
+0.0441791  0.0231417  0.0148155  ...
+0.0156319  0.0323422  0.0389518  ...
+0.0273824  0.0341593  0.0415276  ...
+...
+0.0532142  0.0453191  0.0315497  ...
+```
+
+**Document ID:** doc-1
+**Page Number:** 2
+**Section:** Background
+
+The concept of intelligence has been studied for centuries, and it is still an active area of research today. There are different types of intelligence, including human intelligence, animal intelligence, and machine intelligence. Each type of intelligence has its strengths and weaknesses, and understanding these differences can help us develop more effective AI systems.
+
+One way to approach the development of intelligent systems is through the use of artificial neural networks. These networks are inspired by the structure and function of the human brain and have been shown to be effective in a wide range of tasks, including image recognition and natural language processing.
+
+However, there are also challenges associated with the development of AI systems. One of these challenges is the need for more robust and efficient algorithms. This requires a deeper understanding of the underlying mathematics and statistics that govern AI systems.
+
+**Vector Embeddings:**
+
+* Length: 512
+* Dimensionality: 768
+
+```
+0.0123456  0.0489823  0.0273211  ...
+0.0356199  0.0213512  0.0415678  ...
+0.0463827  0.0331595  0.0456789  ...
+...
+0.0651234  0.0543191  0.0395276  ...
+```
+
+**Document ID:** doc-1
+**Page Number:** 3
+**Section:** Applications
+
+GenAI has many potential applications in areas such as healthcare, finance, and transportation. In healthcare, GenAI can be used to develop more accurate diagnostic tools and personalized treatment plans. In finance, GenAI can be used to develop more effective risk management systems and trading algorithms.
+
+In transportation, GenAI can be used to develop more efficient navigation systems and autonomous vehicles. These are just a few examples of the many potential applications of GenAI.
+
+**Vector Embeddings:**
+
+* Length: 512
+* Dimensionality: 768
+
+```
+0.0156319  0.0323422  0.0389518  ...
+0.0273824  0.0341593  0.0415276  ...
+0.0453191  0.0532142  0.0315497  ...
+...
+0.0623456  0.0489823  0.0421359  ...
+```
+
+**Document ID:** doc-1
+**Page Number:** 4
+**Section:** Limitations
+
+While GenAI has many potential applications, there are also several limitations that need to be addressed. One of these limitations is the need for more robust and efficient algorithms. This requires a deeper understanding of the underlying mathematics and statistics that govern AI systems.
+
+Another limitation is the need for more transparent and explainable AI systems. Many current AI systems are opaque, meaning that it is difficult to understand how they arrived at their conclusions. This can make it difficult to trust these systems and ensure that they are being used responsibly.
+
+**Vector Embeddings:**
+
+* Length: 512
+* Dimensionality: 768
+
+```
+0.0323422  0.0156319  0.0389518  ...
+0.0341593  0.0273824  0.0415276  ...
+0.0315497  0.0453191  0.0532142  ...
+...
+0.0462157  0.0551234  0.0298421  ...
+```
+
+**Document ID:** doc-1
+**Page Number:** 5
+**Section:** Conclusion
+
+In conclusion, GenAI is a subfield of artificial intelligence that focuses on developing intelligent systems capable of performing tasks that typically require human intelligence. The field has many potential applications, including healthcare, finance, and transportation. However, there are also several limitations that need to be addressed, including the need for more robust and efficient algorithms and more transparent and explainable AI systems.
+
+**Vector Embeddings:**
+
+* Length: 512
+* Dimensionality: 768
+
+```
+0.0415276  0.0341593  0.0273824  ...
+0.0389518  0.0323422  0.0156319  ...
+0.0419911  0.0315497  0.0453191  ...
+...
+0.0489823  0.0356199  0.0463827  ...
+```
