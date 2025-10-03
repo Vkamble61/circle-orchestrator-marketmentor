@@ -10,11 +10,14 @@ def run():
     load_dotenv()  # Load environment variables from .env file
     
     print("Knowledge Driven Marketing Mentor...")
-    #MarketMentor().crew().kickoff()
-
-    input_docs = {'source': "src/market_mentor/knowledge_source/introduction-to-genai.pdf"}
-    result = MarketMentor().crew().kickoff(inputs=input_docs)  # Start the crew process
-    
+   
+    user_question = input("Enter your question: ")
+    if user_question.strip() == "":
+        user_question = "What is Generative AI?"
+        result = MarketMentor().crew().kickoff(inputs={"question": user_question}) 
+    else:
+        result = MarketMentor().crew().kickoff(inputs={"question": user_question})
+        
     with open("Retriever_Agent_result.txt", "w", encoding="utf-8") as f:
         f.write(str(result))
     print("Final Result:", result)

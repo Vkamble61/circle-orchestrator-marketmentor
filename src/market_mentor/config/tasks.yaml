@@ -1,23 +1,21 @@
 ingestion_task:
-  name: Document Ingestion Task
-  description: Handles the ingestion of company documents by parsing and extracting clean text.
-  agent: ingestion_agent
-  input: Raw {source} document files (PDFs, DOCX, etc.)
-  expected_output: Clean text chunks with metadata (document id, page number, section)
+  #name: Document Ingestion Task
+  description: "Extract all text and relevant information from the PDF files located in the knowledge directory. Analyze the content to create a structured and clean textual output suitable for indexing."
+  agent: ingestion_agent  
+  expected_output: "A clean and comprehensive text file containing extracted and analyzed information from all PDFs."
+  #expected_output: Clean text chunks with metadata (document id, page number, section)
 
 indexing_task:
-  name: Document Indexing Task  
-  description: Generates vector embeddings from text chunks and stores them for similarity search.
-  agent: indexing_agent
-  input: Clean text chunks with metadata (document id, page number, section)
-  expected_output: Vector embeddings for each text chunk
+  #name: Document Indexing Task  
+  description: "Take the textual data from the ingestion task and generate vector embeddings. Store these embeddings in the appropriate vector database or index for efficient similarity searches."
+  agent: indexing_agent  
+  expected_output: "A vector index ready for similarity retrieval, generated from the ingested text."
 
 retrieval_task:
-  name: Context Retrieval Task  
-  description: Retrieves top relevant text chunks based on vector similarity to a user's query.
-  agent: retrieval_agent  
-  input: User query and vector database
-  expected_output: Retrieved text chunks with source references for grounding
+  #name: Context Retrieval Task  
+  description: "Based on the user query, retrieve the most relevant information by searching the vector index created in the indexing task.    Provide a concise and relevant answer synthesizing the retrieved information."
+  agent: retriever_agent  
+  expected_output: "Concise and relevant answers to user queries based on similarity search results from the indexed vectors"
 
 # task_classification_task:
 #   name: Task Classification Task  
