@@ -1,3 +1,6 @@
-crewai==0.186.1
+crewai
 crewai-tools
-python-dotenv==1.0.0
+python-dotenv
+langchain-community
+langchain-ollama
+chromadb
