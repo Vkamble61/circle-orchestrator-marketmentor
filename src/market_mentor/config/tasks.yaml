@@ -1,47 +1,49 @@
 ingestion_task:
-  #name: Document Ingestion Task
-  description: "Extract all text and relevant information from the PDF files . Analyze the content to create a structured and clean textual output suitable for indexing."
-  agent: ingestion_agent  
-  expected_output: "A clean and comprehensive text file containing extracted and analyzed information from  PDFs."
-  #expected_output: Clean text chunks with metadata (document id, page number, section)
+  agent: ingestion_agent
 
-# indexing_task:
-#   #name: Document Indexing Task  
-#   description: "Take the textual data from the ingestion task and generate vector embeddings. Store these embeddings in the appropriate vector database or index for efficient similarity searches."
-#   agent: indexing_agent  
-#   expected_output: "A vector index ready for similarity retrieval, generated from the ingested text."
+  description: >
+    Step 1: Use Extraction_Tool() exactly ONCE with no parameters.
+    Step 2: Accept whatever result the tool returns without modification.
+    Step 3: Provide that result as your final answer and STOP immediately.
+    DO NOT call the tool again. DO NOT validate results.
+    NO additional processing. NO validation. NO formatting. NO thinking.
 
-# retrieval_task:
-#   #name: Context Retrieval Task  
-#   description: "Retrieve the most relevant information by searching the vector index created in the indexing task.Provide a concise and relevant answer synthesizing the retrieved information based on the user query: "
-#   agent: retriever_agent  
-#   expected_output: "Concise and relevant answers to user queries based on similarity search results from the indexed vectors"
+  expected_output: >
+    The exact output returned by Extraction_Tool, which will be a summary like:
+    "Processed X PDFs: file1.pdf -> extracted_output/file1.txt, file2.pdf -> extracted_output/file2.txt"
+    
+indexing_task:
+  agent: indexing_agent
 
-# task_classification_task:
-#   name: Task Classification Task  
-#   description: Analyzes the user's input to classify if the request is for a Q&A or Marketing content generation task.
-#   agent: task_classification_agent
-#   input: User input text
-#   expected_output: Task label ("Q&A" or "Marketing") and confidence score
+  description: >
+    Step 1: Use Indexing_Tool() exactly ONCE with empty path parameter: Indexing_Tool(path="")
+    Step 2: Accept whatever result the tool returns without modification.
+    Step 3: Provide that result as your final answer and STOP immediately.
+    DO NOT call the tool again. DO NOT validate results. DO NOT process further.
 
-# QandA_task:
-#   name: Q&A Task
-#   description: Handles user queries by retrieving relevant information from the document corpus.
-#   agent: qa_agent
-#   input: User query and retrieved context
-#   expected_output: Final answer to the user's question
+  expected_output: >
+    The exact output returned by Indexing_Tool, which will be a confirmation like:
+    "Successfully indexed X files with Y chunks. Files: [list]"
 
-# Marketing_task:
-#   name: Marketing Content Generation Task
-#   description: Generates marketing content based on user input and retrieved context.
-#   agent: marketing_agent
-#   input: User input and retrieved context
-#   expected_output: Generated marketing content
 
-# logging_task:
-#   name: Logging Task
-#   description: Logs user interactions and system events for monitoring and debugging purposes.
-#   agent: logging_agent
-#   input: User input and system responses
-#   expected_output: Log entries with timestamps and metadata
+retrieval_task:
+  agent: retrieval_agent
+
+  description: >  
+    Step 1: Use Retrieval_Tool() exactly ONCE with the user's question: Retrieval_Tool(question="user's question")
+    Step 2: Accept whatever documents the tool retrieves without modification.
+    Step 3: Synthesize the retrieved information into a comprehensive answer and STOP immediately.
+    DO NOT call the tool again. DO NOT search multiple times. DO NOT validate results.
+
+  expected_output: >
+    A comprehensive answer based on the retrieved documents, including specific examples and details.
+    Format: "Based on the knowledge base: [answer with specific details from retrieved documents]"
   
+marketing_task:
+  agent: marketing_agent
+
+  description: >  
+    Using the retrieval results, provide creative, concise and relevant answers to user queries based on similarity search results.
+ 
+  expected_output: >
+    A detailed marketing strategy or campaign plan based on retrieval task output, the provided information, and market analysis.

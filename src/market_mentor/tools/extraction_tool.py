@@ -1,160 +1,137 @@
-
+""" Tool to extract and analyze text from PDF documents for your MarketBuddy crew."""
 import os
-import pdfplumber
-import ast
+import re
+from typing import ClassVar
 import pypdf
-from pydantic import BaseModel
-from pathlib import Path
-from typing import Any, ClassVar, Dict, List, Optional, Any
-#from crewai import tools
+from pydantic import Field
 from crewai.tools import BaseTool
 
 class ExtractionTool(BaseTool):
     """
-    Tool to extract and analyze text from PDF documents for your MarketMentor crew.
+    Tool to extract and analyze text from PDF documents for your MarketBuddy crew.
     """
-    name: str = "PDF_Extraction_Tool"
-    description: str = "Tool to extract and analyze text from PDF documents for MarketMentor."
-    project_path: ClassVar[Path] = Path.cwd()
-    pdf_path: ClassVar[Path] = project_path / 'knowledge' / 'Role_of_GenAI_in_Marketing.pdf'
+    # Class constants for tool metadata
+    TOOL_NAME: ClassVar[str] = "Extraction_Tool"
+    TOOL_DESCRIPTION: ClassVar[str] = "A tool to extract and clean text from PDF documents in the knowledge folder."
 
-    
-    
-    def extract_with_pdfplumber(self, pdf_path: str) -> Dict[str, Any]:
+    knowledge_folder: str = Field(default="", description="Knowledge folder")
+    extracted_output_folder: str = Field(default="", description="Extracted output folder")
+   
+    def __init__(self):
+        super().__init__(
+            name=self.TOOL_NAME,
+            description=self.TOOL_DESCRIPTION
+        )
+        
+        project_root = os.path.abspath(".")
+        self.knowledge_folder = os.path.join(project_root, "knowledge")
+        self.extracted_output_folder = os.path.join(project_root, "extracted_output")
+        os.makedirs(self.extracted_output_folder, exist_ok=True)
+       
+    def using_pypdf_extract_text(self, pdf_path: str) -> str:
+        """ 
+        Extract text from a PDF file using PyPDF. 
+        Args:
+            pdf_path: Full path to the PDF file
         """
-        Extract text using pdfplumber - RECOMMENDED METHOD
-        Better handling of complex layouts, tables, and formatting
+        text = ""
+        with open(pdf_path, 'rb') as file:
+            reader = pypdf.PdfReader(file)
+            for page in reader.pages:
+                text += page.extract_text() + "\n"
+
+        return text
+
+    def clean_text(self, extracted_text: str) -> str:
+        """ 
+        Clean the extracted text by removing unwanted characters and formatting. 
+        Args:
+            extracted_text: Raw text extracted from PDF
         """
-        print("🔄 Extracting with pdfplumber...")
+        # Remove hyphenated line breaks
+        text = re.sub(r'(\w)-\n(\w)', r'\1\2', extracted_text)
+        # Merge broken lines  
+        text = re.sub(r'\n(?=\w)', ' ', text)  
+        # Collapse multiple whitespace   
+        text = re.sub(r'\s+', ' ', text)
 
-        extracted_data = {
-            'method': 'pdfplumber',
-            'pages': {},
-            'full_text': '',
-            'tables': [],
-            'metadata': {}
-        }
+        return text
 
+    def save_clean_text(self, pdf_filename: str) -> str:
+        """ Extract and save clean text from a PDF file.        
+        Args:
+            pdf_filename: Name of the PDF file (not full path) to process
+        """
+        pdf_path = os.path.join(self.knowledge_folder, pdf_filename)
+        
+        # Extract text from PDF
+        extracted_text = self.using_pypdf_extract_text(pdf_path)
+        cleantext = self.clean_text(str(extracted_text))
+
+        # Create output file path
+        extracted_output_filename = pdf_filename.replace('.pdf', '.txt')
+        extracted_output_path = os.path.join(self.extracted_output_folder, extracted_output_filename)
+
+        # Save cleaned text
+        with open(extracted_output_path, 'w', encoding='utf-8') as f:
+            f.write(cleantext)
+
+        return extracted_output_path
+
+    def _run(self, **kwargs) -> str:
+        """
+        Extract text from PDF documents.
+        
+        Args:
+            **kwargs: Additional parameters ()
+        """
         try:
-            with pdfplumber.open(pdf_path) as pdf:
-                # Get document metadata
-                extracted_data['metadata'] = {
-                    'total_pages': len(pdf.pages),
-                    'pdf_metadata': pdf.metadata
-                }
+            # Ensure knowledge folder exists
+            if not os.path.exists(self.knowledge_folder):
+                return f"Error: Knowledge folder not found at {self.knowledge_folder}"
 
-                full_text_parts = []
+            # Scan knowledge folder for PDF files
+            pdf_files = [f for f in os.listdir(self.knowledge_folder) if f.endswith('.pdf')]
 
-                for page_num, page in enumerate(pdf.pages, 1):
-                    # Extract text from page
-                    page_text = page.extract_text() or ""
+            if not pdf_files:
+                return f"Error: No PDF files found in {self.knowledge_folder}"
 
-                    # Extract tables
-                    page_tables = page.extract_tables()
-
-                    # Store page data
-                    extracted_data['pages'][f'page_{page_num}'] = {
-                        'text': page_text,
-                        'tables_count': len(page_tables),
-                        'character_count': len(page_text)
-                    }
-
-                    # Add to full text with page markers
-                    full_text_parts.append(f"=== PAGE {page_num} ===")
-                    full_text_parts.append(page_text)
-
-                    # Process tables
-                    for table_idx, table in enumerate(page_tables):
-                        table_text = f"\\n--- TABLE {table_idx + 1} ON PAGE {page_num} ---\\n"
-                        for row in table:
-                            if row:  # Skip empty rows
-                                row_text = " | ".join([str(cell or "") for cell in row])
-                                table_text += row_text + "\\n"
-
-                        extracted_data['tables'].append({
-                            'page': page_num,
-                            'table_number': table_idx + 1,
-                            'content': table_text
-                        })
-                        full_text_parts.append(table_text)
-
-                extracted_data['full_text'] = "\\n".join(full_text_parts)
-
-            print(f"✅ pdfplumber: Extracted {extracted_data['metadata']['total_pages']} pages")
-            print(f"📊 Found {len(extracted_data['tables'])} tables")
-
-        except Exception as e:
-            print(f"❌ pdfplumber extraction failed: {e}")
-
-        return extracted_data
-        # Any additional initialization if needed
-    
-    def format_for_agents(self, extracted_data: Dict[str, Any]) -> str:
-        """
-        Format extracted data for use by agents
-        """
-        formatted_parts = []
-        
-        # Add header
-        formatted_parts.append(f"DOCUMENT ANALYSIS")
-        formatted_parts.append(f"Extraction Method: {extracted_data.get('method', 'unknown')}")
-        formatted_parts.append(f"Total Pages: {extracted_data.get('metadata', {}).get('total_pages', 'unknown')}")
-        formatted_parts.append("=" * 50)
-        
-        # Add page content
-        pages = extracted_data.get('pages', {})
-        for page_key, page_data in pages.items():
-            page_num = page_key.replace('page_', '')
-            formatted_parts.append(f"\\nPAGE {page_num}:")
-            formatted_parts.append("-" * 20)
-            formatted_parts.append(page_data.get('text', ''))
-        
-        # Add tables if any
-        tables = extracted_data.get('tables', [])
-        if tables:
-            formatted_parts.append("\\nTABLES FOUND:")
-            formatted_parts.append("-" * 20)
-            for table in tables:
-                formatted_parts.append(table.get('content', ''))
-        
-        return "\\n".join(formatted_parts)
-    
-    def extract_company_document(self, pdf_path: str) -> str:
-        """        Main function to extract text         """
-        
-        if not os.path.exists(pdf_path):
-            return f"❌ File not found: {pdf_path}"
-        
-        try:
-            # Get the best extraction
-            extracted_data = self.extract_with_pdfplumber(pdf_path)
+            print(f"Available PDF files in knowledge folder: {pdf_files}")
             
-            # Format for agents
-            formatted_content = self.format_for_agents(extracted_data)
+            # Check which files need processing (skip already processed)
+            extracted_output_files = []
+            skipped_files = []
+
+            for pdf_file in pdf_files:
+                extracted_output_filename = pdf_file.replace('.pdf', '.txt')
+                extracted_output_path = os.path.join(self.extracted_output_folder, extracted_output_filename)
+
+                # Check if output file already exists
+                if os.path.exists(extracted_output_path):
+                    print(f"Skipping {pdf_file} - already processed")
+                    skipped_files.append(pdf_file)
+                    extracted_output_files.append(extracted_output_path)
+                else:
+                    print(f"Processing PDF file: {pdf_file}")
+                    txt_file = self.save_clean_text(pdf_file)
+                    extracted_output_files.append(txt_file)
             
-            print(f"📋 Extraction Summary:")
-            print(f"   Method: {extracted_data.get('method')}")
-            print(f"   Pages: {extracted_data.get('metadata', {}).get('total_pages')}")
-            print(f"   Characters: {len(formatted_content)}")
-            print(f"   Tables: {len(extracted_data.get('tables', []))}")
-            
-            return formatted_content
+            # Build a concise summary that matches the task expected_output format
+           
+            processed_pairs = []
+            for out_path in extracted_output_files:
+                # out_path may be absolute or relative; extract filename mapping
+                out_fname = os.path.basename(out_path)
+                # Attempt to derive source pdf name from text filename
+                src_pdf = out_fname.replace('.txt', '.pdf')
+                processed_pairs.append(f"{src_pdf} -> extracted_output/{out_fname}")
+
+            summary = f"Processed {len(pdf_files)} PDFs: " + ", ".join(processed_pairs)
+            # If any files were skipped, append that info
+            if skipped_files:
+                summary += f"; Skipped {len(skipped_files)} already-processed files."
+
+            return summary
             
         except Exception as e:
-            return f"❌ Extraction failed: {str(e)}"
-
-    
-    def _run(self) -> str:
-        try:
-            
-            # Use pdfplumber for extraction
-            extracted_data = self.extract_company_document(str(self.pdf_path))
-            return str(extracted_data)
-                    
-        
-        except Exception as e:
-            return f"❌ Error during extraction: {str(e)}"
-
-    
-    
-
+            return f"Error processing PDF: {str(e)}"

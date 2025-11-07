@@ -8,14 +8,14 @@ def run():
        
 
     print("Knowledge Driven Marketing Mentor...")
-    # user_question = input("Enter your question: ")
-    # if user_question.strip() == "":
-    #     user_question = "What is Generative AI?"
-    #     result = MarketMentor().crew().kickoff(inputs={"question": user_question}) 
-    # else:
-    #     result = MarketMentor().crew().kickoff(inputs={"question": user_question})
-    result = MarketMentor().crew().kickoff()
-    with open("Agent_response.txt", "w", encoding="utf-8") as f:
+    question = input("Enter your question: ")
+    if question.strip() == "":
+        question = "What is Generative AI?"
+        result = MarketMentor().crew().kickoff(inputs={"question": question}) 
+    else:
+        result = MarketMentor().crew().kickoff(inputs={"question": question})
+
+    with open("MarketingStrategy.txt", "w", encoding="utf-8") as f:
         f.write(str(result))
     print("Final Result:", result)
     
